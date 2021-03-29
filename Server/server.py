@@ -1,5 +1,7 @@
 import socket
 
+
+
 def checkExist(user):
     accfile = open("account.txt", "r")
     for line in accfile.readlines():
@@ -15,7 +17,6 @@ def addAccount(user,password):
     newAcc="\n"+user+" "+password
     accfile.write(newAcc)
     accfile.close()
-
 
 def CheckAccount(user,password):
 
@@ -49,32 +50,32 @@ def main () :
                 data = conn.recv(1024)
                 data = data.decode('utf-8')
                 if data == 'login':
-                 data = conn.recv(1024)
-                 data = data.decode('utf-8')
-                 user = data.split()
-                 if (CheckAccount(user[0],user[1]) == True) :
-                    check = '1'
-                    conn.sendall(bytes(check,'utf8'))
-                 else:
-                     check = '0'
-                     conn.sendall(bytes(check, 'utf8'))
+                     data = conn.recv(1024)
+                     data = data.decode('utf-8')
+                     user = data.split()
+                     if (CheckAccount(user[0],user[1]) == True) :
+                        check = '1'
+                        conn.sendall(bytes(check,'utf8'))
+                     else:
+                         check = '0'
+                         conn.sendall(bytes(check, 'utf8'))
 
                 if data == 'create':
-                 data = conn.recv(1024)
-                 data = data.decode('utf-8')
-                 create = data.split()
-                 if checkExist(create[0]) == True:
-                     check = '0'
-                     conn.sendall(bytes(check, 'utf8'))
-                 else:
-                     check = '1'
-                     addAccount(create[0], create[1])
-                     conn.sendall(bytes(check, 'utf8'))
+                     data = conn.recv(1024)
+                     data = data.decode('utf-8')
+                     create = data.split()
+                     if checkExist(create[0]) == True:
+                         check = '0'
+                         conn.sendall(bytes(check, 'utf8'))
+                     else:
+                         check = '1'
+                         addAccount(create[0], create[1])
+                         conn.sendall(bytes(check, 'utf8'))
 
-                 break
+                     break
 
         finally:
             s.close()
 
-
-main()
+if __name__ == '__main__':
+    main()

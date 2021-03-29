@@ -137,10 +137,21 @@ class Connect(QDialog):
 
     def ConnectFunction(self):
         #Input here
-        user=self.InputIP.text()
-        password=self.InputPort.text()
-        HOST = user
-        PORT = int(password)
+        HOST = self.InputIP.text()
+        PORT = self.InputPort.text()
+        if (HOST == "" or PORT == ""):
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("IP and Port must be filled")
+            retval = msg.exec_()
+            return
+        if(not PORT.isdigit()):
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Port must be number")
+            retval = msg.exec_()
+            return
+
         s.connect((HOST, PORT))
         #if pass
         login=Login()
@@ -169,8 +180,6 @@ class Login(QDialog):
 
         data = s.recv(1024)
         data = data.decode('utf-8')
-
-
         Switcher(int(data))
 
 
@@ -207,35 +216,10 @@ class CreateAcc(QDialog):
             retval = msg.exec_()
         if int(data) == 1:
             password=self.password.text()
-
             login=Login()
             widget.addWidget(login)
             widget.setCurrentIndex(widget.currentIndex()+1)
 
-#client-sever here
-
-
-#client-sever here
-
-
-#client-sever here
-def CheckAccount(user,password):
-    if user=="1" and password =="1":
-        return 1
-    accfile=open( "account.txt" , "r")
-    for line in accfile.readlines():
-        values=line.split(" ")
-        if values[1][len(values[1])-1:len(values[1])]=="\n":
-            values[1]=values[1][0:len(values[1])-1]
-        if user==values[0]:
-            if password==values[1]:
-                accfile.close()
-                return 1
-            else:
-                accfile.close()
-                return 0
-    accfile.close()
-    return -1
 
 #Switch to different dialog
 def Switcher(i):
