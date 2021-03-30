@@ -115,7 +115,13 @@ class QueryClient(QDialog):
             year = line[4]
         text = "ID: " + id + "\nName: " + name + "\nType: " + type + "\nAuthor: " + author +"\nYear: " +str(year)+ "\n\n"
         filename = "File\\" + id + "-demo.txt"
-        file = open(filename, "r")
+        try:
+            file = open(filename, "r")
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setText("Can't find required file")
+            retval = msg.exec_()
+            return
         text += file.read()
         file.close()
         #send text to client here for displaying
@@ -142,18 +148,29 @@ class Connect(QDialog):
         if (HOST == "" or PORT == ""):
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("IP and Port must be filled")
+            msg.setText("IP and Port must be filled!")
             retval = msg.exec_()
             return
         if(not PORT.isdigit()):
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Port must be number")
+            msg.setText("Port must be number!")
             retval = msg.exec_()
             return
-
-        s.connect((HOST, PORT))
+        PORT=int(PORT)
+        try:
+            s.connect((HOST, PORT))
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed !")
+            retval = msg.exec_()
+            return
         #if pass
+        queryClient = QueryClient()
+        msg = QtWidgets.QMessageBox()
+        msg.setText("Connect Success!")
+        retval = msg.exec_()
         login=Login()
         widget.setFixedWidth(480)
         widget.setFixedHeight(620)
@@ -173,8 +190,6 @@ class Login(QDialog):
         s.sendall(b'login')
         user=self.user.text()
         password=self.password.text()
-        if user == "1" and password == "1":
-         Switcher(1)
         tk = user + ' ' + password
         s.sendall(bytes(tk, "utf8"))
 
@@ -215,7 +230,9 @@ class CreateAcc(QDialog):
             msg.setText("Existed User")
             retval = msg.exec_()
         if int(data) == 1:
-            password=self.password.text()
+            msg = QtWidgets.QMessageBox()
+            msg.setText("Registered Successfully !")
+            retval = msg.exec_()
             login=Login()
             widget.addWidget(login)
             widget.setCurrentIndex(widget.currentIndex()+1)
