@@ -18,7 +18,7 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
         connection = sqlite3.connect("serverBook.db")
         cur = connection.cursor()
         query = "'" + query + "'"
-        print(query)
+
         if type == "name":
             sqlcom = "SELECT *,COUNT(*) FROM book where Name=" + query
         elif type == "type":
@@ -44,8 +44,10 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
         tableTup = cur.execute(sqlcom)
         self.tableWidget.setRowCount(number)
         tableIndex = 0
+        myString=""
         for row in tableTup:
-            print(row)
+            myString=myString+row[0]+" "+row[1]+" "+row[2]+" "+row[3]+" "+str(row[4])+" "
+            print(myString)
             self.tableWidget.setItem(tableIndex, 0, QtWidgets.QTableWidgetItem(row[0]))
             self.tableWidget.setItem(tableIndex, 1, QtWidgets.QTableWidgetItem(row[1]))
             self.tableWidget.setItem(tableIndex, 2, QtWidgets.QTableWidgetItem(row[2]))
