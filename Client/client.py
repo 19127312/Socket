@@ -41,18 +41,23 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
         else:
             sqlcom = "SELECT * FROM book where name=" + query
         #send tuple here for client
-        tableTup = cur.execute(sqlcom)
         self.tableWidget.setRowCount(number)
         tableIndex = 0
         myString=""
-        for row in tableTup:
-            myString=myString+row[0]+" "+row[1]+" "+row[2]+" "+row[3]+" "+str(row[4])+" "
-            print(myString)
-            self.tableWidget.setItem(tableIndex, 0, QtWidgets.QTableWidgetItem(row[0]))
-            self.tableWidget.setItem(tableIndex, 1, QtWidgets.QTableWidgetItem(row[1]))
-            self.tableWidget.setItem(tableIndex, 2, QtWidgets.QTableWidgetItem(row[2]))
-            self.tableWidget.setItem(tableIndex, 3, QtWidgets.QTableWidgetItem(row[3]))
-            self.tableWidget.setItem(tableIndex, 4, QtWidgets.QTableWidgetItem(str(row[4])))
+        for row in cur.execute(sqlcom):
+            myString=myString+row[0]+" "+row[1]+" "+row[2]+" "+row[3]+" "+str(row[4])+"|"
+
+        #client receive string
+        myTuple=myString.split("|")
+        myTuple.remove("")
+        print(myTuple)
+        for row in myTuple:
+            line=row.split()
+            self.tableWidget.setItem(tableIndex, 0, QtWidgets.QTableWidgetItem(line[0]))
+            self.tableWidget.setItem(tableIndex, 1, QtWidgets.QTableWidgetItem(line[1]))
+            self.tableWidget.setItem(tableIndex, 2, QtWidgets.QTableWidgetItem(line[2]))
+            self.tableWidget.setItem(tableIndex, 3, QtWidgets.QTableWidgetItem(line[3]))
+            self.tableWidget.setItem(tableIndex, 4, QtWidgets.QTableWidgetItem(line[4]))
             tableIndex += 1
 
 #client -sever here
@@ -104,6 +109,7 @@ class QueryClient(QDialog):
         cur = connection.cursor()
         sqlcom = "SELECT * ,count (*) FROM book where ID=" + ID
         check = 1
+        filename =""
         # receive text here
         for line in (cur.execute(sqlcom)):
             print(line)
@@ -115,8 +121,8 @@ class QueryClient(QDialog):
             type = line[2]
             author = line[3]
             year = line[4]
-        text = "ID: " + id + "\nName: " + name + "\nType: " + type + "\nAuthor: " + author +"\nYear: " +str(year)+ "\n\n"
-        filename = "File\\" + id + "-demo.txt"
+            text = "ID: " + id + "\nName: " + name + "\nType: " + type + "\nAuthor: " + author + "\nYear: " + str(year) + "\n\n"
+            filename = "File\\" + id + "-demo.txt"
         try:
             file = open(filename, "r")
         except:
