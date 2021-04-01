@@ -15,42 +15,23 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
 #client-sever here
     def loadtable(self,query,type):
         #this is done at server
-        connection = sqlite3.connect("serverBook.db")
-        cur = connection.cursor()
-        query = "'" + query + "'"
 
-        if type == "name":
-            sqlcom = "SELECT *,COUNT(*) FROM book where Name=" + query
-        elif type == "type":
-            sqlcom = "SELECT *,COUNT(*) FROM book where type=" + query
-        elif type == "author":
-            sqlcom = "SELECT *,COUNT(*) FROM book where author=" + query
-        for line in (cur.execute(sqlcom)):
-            number = line[5]
-        #send number for client to display
-        if(number==0):
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Can't find file in library")
-            retval = msg.exec_()
-            return 1
-        if type == "type":
-            sqlcom = "SELECT * FROM book where type=" + query
-        elif type == "author":
-            sqlcom = "SELECT * FROM book where author=" + query
-        else:
-            sqlcom = "SELECT * FROM book where name=" + query
-        #send tuple here for client
-        self.tableWidget.setRowCount(number)
-        tableIndex = 0
-        myString=""
-        for row in cur.execute(sqlcom):
-            myString=myString+row[0]+" "+row[1]+" "+row[2]+" "+row[3]+" "+str(row[4])+"|"
+        s.sendall(b'sqlQuery')
+        stringServer=query+" "+type
+        s.sendall(bytes(stringServer, "utf8"))
+
+        size = s.recv(1024)
+        size = size.decode('utf-8')
+
+        data = s.recv(int(size))
+        data = data.decode('utf-8')
 
         #client receive string
-        myTuple=myString.split("|")
-        myTuple.remove("")
-        print(myTuple)
+        myTuple=data.split("|")
+        number=myTuple[len(myTuple)-1]
+        myTuple.remove(number)
+        self.tableWidget.setRowCount(int(number))
+        tableIndex = 0
         for row in myTuple:
             line=row.split()
             self.tableWidget.setItem(tableIndex, 0, QtWidgets.QTableWidgetItem(line[0]))
@@ -196,13 +177,15 @@ class Login(QDialog):
 
     def loginfunction(self):
         s.sendall(b'login')
+
         user=self.user.text()
         password=self.password.text()
         tk = user + ' ' + password
-        s.sendall(bytes(tk, "utf8"))
 
+        s.sendall(bytes(tk, "utf8"))
         data = s.recv(1024)
         data = data.decode('utf-8')
+
         Switcher(int(data))
 
 
