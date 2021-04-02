@@ -75,7 +75,7 @@ font-size:14pt</string>
      <x>130</x>
      <y>261</y>
      <width>381</width>
-     <height>271</height>
+     <height>181</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -153,6 +153,23 @@ font-size:14pt</string>
    </property>
    <property name="text">
     <string>LOGOUT</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ViewButton">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>470</y>
+     <width>111</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(255, 255, 255);
+font-size:14pt</string>
+   </property>
+   <property name="text">
+    <string>VIEW</string>
    </property>
   </widget>
  </widget>

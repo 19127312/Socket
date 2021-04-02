@@ -46,9 +46,12 @@ class QueryClient(QDialog):
     def __init__(self):
         super(QueryClient,self).__init__()
         loadUi("QueryClient.ui",self)
-        self.SearchButton.clicked.connect(self.SearchFucntion)
+        self.SearchButton.clicked.connect(self.SearchFunction)
+        self.ViewButton.clicked.connect(self.ViewFunction)
 
-    def SearchFucntion(self):
+    def ViewFunction(self):
+        pass
+    def SearchFunction(self):
         command=self.Command.text()
         comSplit=command.split(' ', 1)
         if(len(comSplit)!=0):
@@ -86,36 +89,20 @@ class QueryClient(QDialog):
 
     def IDfunct(self,ID):
         # send to sever here
-        connection = sqlite3.connect("serverBook.db")
-        cur = connection.cursor()
+        s.sendall(b'sqlQueryID')
         sqlcom = "SELECT * ,count (*) FROM book where ID=" + ID
-        check = 1
-        filename =""
+        s.sendall(bytes(sqlcom, "utf8"))
+
         # receive text here
-        for line in (cur.execute(sqlcom)):
-            print(line)
-            if (line[5] == 0):
-                check = 0
-                break
-            id = line[0]
-            name = line[1]
-            type = line[2]
-            author = line[3]
-            year = line[4]
-            text = "ID: " + id + "\nName: " + name + "\nType: " + type + "\nAuthor: " + author + "\nYear: " + str(year) + "\n\n"
-            filename = "File\\" + id + "-demo.txt"
-        try:
-            file = open(filename, "r")
-        except:
-            msg = QtWidgets.QMessageBox()
-            msg.setText("Can't find required file")
-            retval = msg.exec_()
-            return
-        text += file.read()
-        file.close()
-        #send text to client here for displaying
-        if (check):
-            self.DemoView.setText(text)
+        size = s.recv(1024)
+        size = size.decode('utf-8')
+
+        data = s.recv(int(size))
+        data = data.decode('utf-8')
+
+        text=data.split(" ",1)
+        if (int(text[0])):
+            self.DemoView.setText(text[1])
         else:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -158,7 +145,7 @@ class Connect(QDialog):
         #if pass
         queryClient = QueryClient()
         msg = QtWidgets.QMessageBox()
-        msg.setText("Connect Success!")
+        msg.setText("Established connection successfully!")
         retval = msg.exec_()
         login=Login()
         widget.setFixedWidth(480)
@@ -183,9 +170,15 @@ class Login(QDialog):
         tk = user + ' ' + password
 
         s.sendall(bytes(tk, "utf8"))
-        data = s.recv(1024)
-        data = data.decode('utf-8')
-
+        try:
+            data = s.recv(1024)
+            data = data.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Login failed !")
+            retval = msg.exec_()
+            return
         Switcher(int(data))
 
 
@@ -212,8 +205,15 @@ class CreateAcc(QDialog):
         tk = user + ' ' + password + ' ' + confirm
         s.sendall(bytes(tk, "utf8"))
 
-        data = s.recv(1024)
-        data = data.decode('utf-8')
+        try:
+            data = s.recv(1024)
+            data = data.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Create account failed !")
+            retval = msg.exec_()
+            return
 
         if int(data) == 0:
             msg = QtWidgets.QMessageBox()

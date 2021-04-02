@@ -115,6 +115,31 @@ def main () :
                     sizeString=getsizeof(myString)
                     conn.sendall(bytes(str(sizeString), 'utf8'))
                     conn.sendall(bytes(myString, 'utf8'))
+
+                if data == 'sqlQueryID':
+                    data = conn.recv(1024)
+                    data = data.decode('utf-8')
+                    connection = sqlite3.connect("serverBook.db")
+                    cur = connection.cursor()
+                    check=1
+                    text=""
+                    for line in (cur.execute(data)):
+                        print(line)
+                        if (line[5] == 0):
+                            check = 0
+                            break
+                        id = line[0]
+                        name = line[1]
+                        type = line[2]
+                        author = line[3]
+                        year = line[4]
+                        text = "ID: " + id + "\nName: " + name + "\nType: " + type + "\nAuthor: " + author + "\nYear: " + str(year) + "\n\n"
+                    sentback=str(check) +" "+ text
+                    sizeString = getsizeof(sentback)
+                    conn.sendall(bytes(str(sizeString), 'utf8'))
+                    conn.sendall(bytes(sentback, 'utf8'))
+
+
         finally:
             s.close()
 
