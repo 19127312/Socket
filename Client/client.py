@@ -6,13 +6,24 @@ from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#client -sever here
+
+class QueryClientView(QtWidgets.QMainWindow,QPushButton):
+    def __init__(self,data):
+        super(QueryClientView, self).__init__()
+        uic.loadUi("QueryClientView.ui", self).show()
+        self.loadData(data)
+    def loadData(self,data):
+        self.setFixedWidth(511)
+        self.setFixedWidth(601)
+        self.ViewText.setText(data)
+
+
 class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
     def __init__(self,query,type):
         super(QueryClientTable, self).__init__()
         uic.loadUi("QueryClientTable.ui", self).show()
         self.loadtable(query,type)
-#client-sever here
+
     def loadtable(self,query,type):
         #this is done at server
 
@@ -41,7 +52,7 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
             self.tableWidget.setItem(tableIndex, 4, QtWidgets.QTableWidgetItem(line[4]))
             tableIndex += 1
 
-#client -sever here
+
 class QueryClient(QDialog):
     def __init__(self):
         super(QueryClient,self).__init__()
@@ -50,7 +61,38 @@ class QueryClient(QDialog):
         self.ViewButton.clicked.connect(self.ViewFunction)
 
     def ViewFunction(self):
-        pass
+        command = self.Command.text()
+        comSplit = command.split(' ', 1)
+        if (len(comSplit) != 0):
+            if (comSplit[0] == "F_ID"):
+                ID = comSplit[1]
+                if ID.isdigit():
+
+                    s.sendall(b'View')
+                    filename=ID+".txt"
+                    s.sendall(bytes(filename, "utf8"))
+
+                    size = s.recv(1024)
+                    size = size.decode('utf-8')
+
+                    data = s.recv(int(size))
+                    data = data.decode('utf-8')
+                    if(data==""):
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Can't find file in library")
+                        retval = msg.exec_()
+                    else:
+                        self.view = QueryClientView(data)
+                        self.view.show()
+                else:
+                    msg = QtWidgets.QMessageBox()
+                    msg.setText("ID must be number")
+                    retval = msg.exec_()
+            else:
+                msg = QtWidgets.QMessageBox()
+                msg.setText("Wrong input for viewing")
+                retval = msg.exec_()
     def SearchFunction(self):
         command=self.Command.text()
         comSplit=command.split(' ', 1)
@@ -110,7 +152,7 @@ class QueryClient(QDialog):
             retval = msg.exec_()
             return 0
 
-#client-server here
+
 class Connect(QDialog):
     def __init__(self):
         super(Connect,self).__init__()

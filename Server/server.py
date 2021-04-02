@@ -139,6 +139,21 @@ def main () :
                     conn.sendall(bytes(str(sizeString), 'utf8'))
                     conn.sendall(bytes(sentback, 'utf8'))
 
+                if data=='View':
+                    filename = conn.recv(1024)
+                    filename = filename.decode('utf-8')
+                    filename="File//"+filename
+                    try:
+                        file=open(filename,"r")
+                        myText=file.read()
+                        file.close()
+                    except:
+                        myText = ""
+                    sizeString = getsizeof(myText)
+
+                    conn.sendall(bytes(str(sizeString), 'utf8'))
+                    conn.sendall(bytes(myText, 'utf8'))
+
 
         finally:
             s.close()
