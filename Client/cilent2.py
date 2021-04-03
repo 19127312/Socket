@@ -307,7 +307,6 @@ def Switcher(i):
 
 
 #main
-
 app=QApplication(sys.argv)
 mainwindow=Connect()
 widget=QtWidgets.QStackedWidget()
