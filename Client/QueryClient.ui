@@ -33,9 +33,9 @@ alternate-background-color: rgb(198, 240, 255);</string>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>100</x>
      <y>120</y>
-     <width>181</width>
+     <width>221</width>
      <height>41</height>
     </rect>
    </property>
@@ -86,9 +86,9 @@ font-size: 12pt</string>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>180</x>
      <y>542</y>
-     <width>111</width>
+     <width>141</width>
      <height>41</height>
     </rect>
    </property>
@@ -133,12 +133,12 @@ font-size:14pt</string>
     </property>
    </item>
   </widget>
-  <widget class="QPushButton" name="SearchButton_2">
+  <widget class="QPushButton" name="DisconnectButton">
    <property name="geometry">
     <rect>
-     <x>520</x>
+     <x>510</x>
      <y>0</y>
-     <width>141</width>
+     <width>151</width>
      <height>41</height>
     </rect>
    </property>
@@ -152,7 +152,7 @@ alternate-background-color: rgb(246, 252, 255);
 font-size:14pt</string>
    </property>
    <property name="text">
-    <string>LOGOUT</string>
+    <string>DISCONNECT</string>
    </property>
   </widget>
   <widget class="QPushButton" name="ViewButton">
