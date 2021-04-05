@@ -17,7 +17,6 @@ class QueryClientView(QtWidgets.QMainWindow,QPushButton):
         self.setFixedWidth(601)
         self.ViewText.setText(data)
 
-
 class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
     def __init__(self,query,type):
         super(QueryClientTable, self).__init__()
@@ -26,16 +25,44 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
 
     def loadtable(self,query,type):
         #this is done at server
-
-        s.sendall(b'sqlQuery')
+        try:
+            s.sendall(b'sqlQuery')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
         stringServer=query+" "+type
-        s.sendall(bytes(stringServer, "utf8"))
 
-        size = s.recv(1024)
-        size = size.decode('utf-8')
+        try:
+            s.sendall(bytes(stringServer, "utf8"))
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
 
-        data = s.recv(int(size))
-        data = data.decode('utf-8')
+        try:
+            size = s.recv(1024)
+            size = size.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
+
+        try:
+            data = s.recv(int(size))
+            data = data.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+
 
         #client receive string
         myTuple=data.split("|")
@@ -76,16 +103,43 @@ class QueryClient(QDialog):
             if (comSplit[0] == "F_ID"):
                 ID = comSplit[1]
                 if ID.isdigit():
-
-                    s.sendall(b'View')
+                    try:
+                        s.sendall(b'View')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
                     filename=ID+".txt"
-                    s.sendall(bytes(filename, "utf8"))
+                    try:
+                        s.sendall(bytes(filename, "utf8"))
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
 
-                    size = s.recv(1024)
-                    size = size.decode('utf-8')
+                    try:
+                        size = s.recv(1024)
+                        size = size.decode('utf-8')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
 
-                    data = s.recv(int(size))
-                    data = data.decode('utf-8')
+                    try:
+                        data = s.recv(int(size))
+                        data = data.decode('utf-8')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+
                     if(data==""):
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -141,16 +195,45 @@ class QueryClient(QDialog):
 
     def IDfunct(self,ID):
         # send to sever here
-        s.sendall(b'sqlQueryID')
+        try:
+            s.sendall(b'sqlQueryID')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
+
         sqlcom = "SELECT * ,count (*) FROM book where ID=" + ID
-        s.sendall(bytes(sqlcom, "utf8"))
+        try:
+            s.sendall(bytes(sqlcom, "utf8"))
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
 
+        try:
         # receive text here
-        size = s.recv(1024)
-        size = size.decode('utf-8')
+            size = s.recv(1024)
+            size = size.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
 
-        data = s.recv(int(size))
-        data = data.decode('utf-8')
+        try:
+            data = s.recv(int(size))
+            data = data.decode('utf-8')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
 
         text=data.split(" ",1)
         if (int(text[0])):
@@ -215,8 +298,14 @@ class Login(QDialog):
         self.createaccbutton.clicked.connect(self.gotocreate)
 
     def loginfunction(self):
-        s.sendall(b'login')
-
+        try:
+            s.sendall(b'login')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
         user=self.user.text()
         password=self.password.text()
         tk = user + ' ' + password
@@ -250,7 +339,14 @@ class CreateAcc(QDialog):
         self.confirmpass.setEchoMode(QtWidgets.QLineEdit.Password)
 
     def createaccfunction(self):
-        s.sendall(b'create')
+        try:
+            s.sendall(b'create')
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
+            return
         user = self.user.text()
         password = self.password.text()
         confirm = self.confirmpass.text()
@@ -307,14 +403,14 @@ def Switcher(i):
 
 
 #main
-
-app=QApplication(sys.argv)
-mainwindow=Connect()
-widget=QtWidgets.QStackedWidget()
-widget.addWidget(mainwindow)
-widget.setFixedWidth(347)
-widget.setFixedHeight(190)
-widget.show()
-app.exec_()
+if __name__ == "__main__":
+    app=QApplication(sys.argv)
+    mainwindow=Connect()
+    widget=QtWidgets.QStackedWidget()
+    widget.addWidget(mainwindow)
+    widget.setFixedWidth(347)
+    widget.setFixedHeight(190)
+    widget.show()
+    app.exec_()
 
 
