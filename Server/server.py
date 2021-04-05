@@ -2,11 +2,7 @@ import socket
 import sqlite3
 from sys import getsizeof
 import os
-import  sys
 from _thread import *
-from PyQt5 import QtWidgets,uic
-from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
-from PyQt5.uic import loadUi
 
 HOST = '127.0.0.1'
 PORT = 8000
@@ -165,33 +161,14 @@ def multi_threaded_client(conn):
 
     conn.close()
 
-class ServerDisconnectALL(QDialog):
-    def __init__(self):
-        super(ServerDisconnectALL,self).__init__()
-        loadUi("ServerDiconnectAll.ui",self)
-        self.DisconnectButton.clicked.connect(self.DisconnectFunction)
-    def DisconnectFunction(self):
-        pass
-
 #main
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    mainwindow = ServerDisconnectALL()
-    widget = QtWidgets.QStackedWidget()
-    widget.addWidget(mainwindow)
-    widget.setFixedWidth(293)
-    widget.setFixedHeight(213)
-    widget.show()
-    app.exec_()
-    while True:
-        try:
-            conn, addr = s.accept()
-            print('Connected to: ' + addr[0] + ':' + str(addr[1]))
-            start_new_thread(multi_threaded_client, (conn, ))
-            ThreadCount += 1
-            print('Connected by', addr)
-        except:
-            s.close()
+while True:
+    conn, addr = s.accept()
+    print('Connected to: ' + addr[0] + ':' + str(addr[1]))
+    start_new_thread(multi_threaded_client, (conn, ))
+    ThreadCount += 1
+    print('Connected by', addr)
+s.close()
 
 
 

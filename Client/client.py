@@ -30,24 +30,12 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
         s.sendall(b'sqlQuery')
         stringServer=query+" "+type
         s.sendall(bytes(stringServer, "utf8"))
-        try:
-            size = s.recv(1024)
-            size = size.decode('utf-8')
-        except:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Connect failed!")
-            retval = msg.exec_()
-            return 1
-        try:
-            data = s.recv(int(size))
-            data = data.decode('utf-8')
-        except:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Connect failed!")
-            retval = msg.exec_()
-            return 1
+
+        size = s.recv(1024)
+        size = size.decode('utf-8')
+
+        data = s.recv(int(size))
+        data = data.decode('utf-8')
 
         #client receive string
         myTuple=data.split("|")
@@ -92,24 +80,12 @@ class QueryClient(QDialog):
                     s.sendall(b'View')
                     filename=ID+".txt"
                     s.sendall(bytes(filename, "utf8"))
-                    try:
-                        size = s.recv(1024)
-                        size = size.decode('utf-8')
-                    except:
-                        msg = QtWidgets.QMessageBox()
-                        msg.setIcon(QtWidgets.QMessageBox.Critical)
-                        msg.setText("Connect failed!")
-                        retval = msg.exec_()
-                        return 1
-                    try:
-                        data = s.recv(int(size))
-                        data = data.decode('utf-8')
-                    except:
-                        msg = QtWidgets.QMessageBox()
-                        msg.setIcon(QtWidgets.QMessageBox.Critical)
-                        msg.setText("Connect failed!")
-                        retval = msg.exec_()
-                        return 1
+
+                    size = s.recv(1024)
+                    size = size.decode('utf-8')
+
+                    data = s.recv(int(size))
+                    data = data.decode('utf-8')
                     if(data==""):
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -170,24 +146,12 @@ class QueryClient(QDialog):
         s.sendall(bytes(sqlcom, "utf8"))
 
         # receive text here
-        try:
-            size = s.recv(1024)
-            size = size.decode('utf-8')
-        except:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Connect failed!")
-            retval = msg.exec_()
-            return 1
-        try:
-            data = s.recv(int(size))
-            data = data.decode('utf-8')
-        except:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Connect failed!")
-            retval = msg.exec_()
-            return 1
+        size = s.recv(1024)
+        size = size.decode('utf-8')
+
+        data = s.recv(int(size))
+        data = data.decode('utf-8')
+
         text=data.split(" ",1)
         if (int(text[0])):
             self.DemoView.setText(text[1])
