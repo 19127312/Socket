@@ -1,12 +1,14 @@
 import socket
 import sqlite3
 import sys
+import threading
 from sys import getsizeof
 import os
 from _thread import *
 from PyQt5 import QtWidgets,uic
 from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
+from PyQt5.QtCore import (QCoreApplication, QThread)
 
 HOST = '127.0.0.1'
 PORT = 8000
@@ -293,21 +295,48 @@ def multi_threaded_client(conn):
 
 #main
 
-if __name__ == "__main__":
+class Server(QDialog):
+    def __init__(self):
+        super(Server,self).__init__()
+        loadUi("DisconnectALL.ui",self)
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))  # lắng nghe
-    s.listen(3)
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST, PORT))
+s.listen(3)
 
-    while True:
-        try:
-            conn, addr = s.accept()
-            print('Connected to: ' + addr[0] + ':' + str(addr[1]))
-            start_new_thread(multi_threaded_client, (conn,))
-            ThreadCount += 1
-            print('Connected by', addr)
-        except:
-            s.close()
+
+class Task(QThread):
+    def run(self):
+        # some heavy task
+        ThreadCount = 0
+        while 1:
+            try:
+
+                conn, addr = s.accept()
+                print('Connected to: ' + addr[0] + ':' + str(addr[1]))
+                start_new_thread(multi_threaded_client, (conn,))
+                ThreadCount += 1
+                print('Connected by', addr)
+            except:
+                s.close()
+class Server(QDialog):
+    def __init__(self):
+        super(Server,self).__init__()
+        loadUi("DisconnectALL.ui",self)
+        self.do_task()
+    def do_task(self):
+        self.thread = Task()
+        self.thread.start()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    mainwindow = Server()
+    widget = QtWidgets.QStackedWidget()
+    widget.addWidget(mainwindow)
+    widget.setFixedWidth(347)
+    widget.setFixedHeight(190)
+    widget.show()
+    app.exec_()
 
 
 
