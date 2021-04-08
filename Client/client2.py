@@ -277,8 +277,6 @@ class Connect(QDialog):
             retval = msg.exec_()
             return
         #if pass
-
-        queryClient = QueryClient()
         msg = QtWidgets.QMessageBox()
         msg.setText("Established connection successfully!")
         retval = msg.exec_()
@@ -309,8 +307,10 @@ class Login(QDialog):
         user=self.user.text()
         password=self.password.text()
         tk = user + ' ' + password
+
         try:
             s.sendall(bytes(tk, "utf8"))
+
         except:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -321,6 +321,7 @@ class Login(QDialog):
             s.settimeout(5)
             data = s.recv(1024)
             data = data.decode('utf-8')
+
         except:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)

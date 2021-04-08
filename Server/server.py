@@ -14,7 +14,7 @@ PORT = 8000
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 s.listen(3) #Maximum number of client in queue
-MaxClient=0
+
 
 def checkExist(user):
     accfile = open("account.txt", "r")
@@ -296,13 +296,13 @@ def multi_threaded_client(conn):
 
 class Task(QThread):
     def run(self):
-        s.listen(3)
-        ThreadCount = 0
-        while 1:
+        v = ''
+        vlock = allocate_lock()
+        nclientlock = allocate_lock()
+        for i in range(MaxClient):
             try:
-                conn, addr = s.accept()
-                start_new_thread(multi_threaded_client, (conn,))
-                ThreadCount +=1
+                (client, ap) = s.accept()
+                start_new_thread(multi_threaded_client, (client,))
             except:
                 s.close()
 
@@ -328,6 +328,7 @@ class InitServer(QDialog):
            msg.setText("Cannot create!")
            retval = msg.exec_()
        else:
+            global  MaxClient
             MaxClient=int(self.spinBox.value())
             server = Server()
             msg = QtWidgets.QMessageBox()
