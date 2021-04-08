@@ -1,9 +1,7 @@
 import socket
 import sqlite3
 import sys
-import threading
 from sys import getsizeof
-import os
 from _thread import *
 from PyQt5 import QtWidgets,uic
 from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
@@ -12,8 +10,11 @@ from PyQt5.QtCore import (QCoreApplication, QThread)
 
 HOST = '127.0.0.1'
 PORT = 8000
-ThreadCount = 0
 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind((HOST, PORT))
+s.listen(3) #Maximum number of client in queue
+MaxClient=0
 
 def checkExist(user):
     accfile = open("account.txt", "r")
@@ -293,32 +294,18 @@ def multi_threaded_client(conn):
 
     conn.close()
 
-#main
-
-class Server(QDialog):
-    def __init__(self):
-        super(Server,self).__init__()
-        loadUi("DisconnectALL.ui",self)
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind((HOST, PORT))
-s.listen(3)
-
-
 class Task(QThread):
     def run(self):
-        # some heavy task
+        s.listen(3)
         ThreadCount = 0
         while 1:
             try:
-
                 conn, addr = s.accept()
-                print('Connected to: ' + addr[0] + ':' + str(addr[1]))
                 start_new_thread(multi_threaded_client, (conn,))
-                ThreadCount += 1
-                print('Connected by', addr)
+                ThreadCount +=1
             except:
                 s.close()
+
 class Server(QDialog):
     def __init__(self):
         super(Server,self).__init__()
@@ -328,13 +315,36 @@ class Server(QDialog):
         self.thread = Task()
         self.thread.start()
 
+class InitServer(QDialog):
+    def __init__(self):
+        super(InitServer,self).__init__()
+        loadUi("ServerCreate.ui",self)
+        self.CreateButton.clicked.connect(self.CreateServer)
+        self.setWindowTitle("Create Server")
+    def CreateServer(self):
+       if(int(self.spinBox.value())==0):
+           msg = QtWidgets.QMessageBox()
+           msg.setIcon(QtWidgets.QMessageBox.Critical)
+           msg.setText("Cannot create!")
+           retval = msg.exec_()
+       else:
+            MaxClient=int(self.spinBox.value())
+            server = Server()
+            msg = QtWidgets.QMessageBox()
+            msg.setText("Create Server Successfully")
+            retval = msg.exec_()
+            widget.addWidget(server)
+            widget.setFixedWidth(321)
+            widget.setFixedHeight(133)
+            widget.setCurrentIndex(widget.currentIndex() + 1)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainwindow = Server()
+    mainwindow = InitServer()
     widget = QtWidgets.QStackedWidget()
     widget.addWidget(mainwindow)
-    widget.setFixedWidth(347)
-    widget.setFixedHeight(190)
+    widget.setFixedWidth(226)
+    widget.setFixedHeight(105)
     widget.show()
     app.exec_()
 
