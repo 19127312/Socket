@@ -288,7 +288,7 @@ def multi_threaded_client(conn):
             if(SQL_ID(conn)==0):
                 break
 
-        if data == 'View':
+        if data == 'View' or data=='Download':
             if View(conn)==0:
                 break
 

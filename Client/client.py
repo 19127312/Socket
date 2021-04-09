@@ -1,11 +1,36 @@
 import sys
-import sqlite3
 import socket
+#need pyqt
+from _thread import *
 from PyQt5 import QtWidgets,uic
 from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
-
+from PyQt5.QtCore import (QCoreApplication, QThread)
+#need fpdf
+from fpdf import FPDF
+#need docx install
+import docx
+#need win32 install
+import os
+import win32com.client
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class CWordAutomate:
+    def __init__( self ):
+        self.obWord         = win32com.client.Dispatch( "Word.Application" )
+        self.obDoc          = self.obWord.Documents.Add( )
+        self.obWord.Visible = 1
+        self.Sel            = self.obWord.Selection
+
+    def Write( self, text, font, size, bold=0 ):
+        self.Sel.Font.Name = font
+        self.Sel.Font.Bold = bold
+        self.Sel.Font.Size = size
+        self.Sel.TypeText( Text=text)
+
+    def Save(self, Filename):
+        self.obDoc.SaveAs(Filename)
+    def Quit(self):
+        self.obWord.Quit()
 
 class QueryClientView(QtWidgets.QMainWindow,QPushButton):
     def __init__(self,data):
@@ -79,7 +104,6 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
             self.tableWidget.setItem(tableIndex, 4, QtWidgets.QTableWidgetItem(line[4]))
             tableIndex += 1
 
-
 class QueryClient(QDialog):
     def __init__(self):
         super(QueryClient,self).__init__()
@@ -87,6 +111,111 @@ class QueryClient(QDialog):
         self.SearchButton.clicked.connect(self.SearchFunction)
         self.ViewButton.clicked.connect(self.ViewFunction)
         self.DisconnectButton.clicked.connect(self.DisconnectFunction)
+        self.DownLoadButton.clicked.connect(self.DownloadFunction)
+    def DownloadFunction(self):
+        global data
+        type=str(self.comboBox.currentText())
+        print(type)
+        command = self.Command.text()
+        comSplit = command.split(' ', 1)
+        if (len(comSplit) != 0):
+            if (comSplit[0] == "F_ID"):
+                ID = comSplit[1]
+                if ID.isdigit():
+                    try:
+                        s.sendall(b'Download')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
+                    filename=ID+".txt"
+                    try:
+                        s.sendall(bytes(filename, "utf8"))
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
+
+                    try:
+                        size = s.recv(1024)
+                        size = size.decode('utf-8')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+                        return
+
+                    try:
+                        data = s.recv(int(size))
+                        data = data.decode('utf-8')
+                    except:
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Connect failed!")
+                        retval = msg.exec_()
+
+                    if(data==""):
+                        msg = QtWidgets.QMessageBox()
+                        msg.setIcon(QtWidgets.QMessageBox.Critical)
+                        msg.setText("Can't find file in library")
+                        retval = msg.exec_()
+                    else:
+                        filename = 'DownloadFile//' + ID + type
+                        if(type=='.txt'):
+                            try:
+                                file = open(filename, "w")
+                                file.write(data)
+                                file.close()
+                            except:
+                                msg = QtWidgets.QMessageBox()
+                                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                                msg.setText("Download failed")
+                                retval = msg.exec_()
+                                return
+                            msg = QtWidgets.QMessageBox()
+                            msg.setText("Download Successfully !")
+                            retval = msg.exec_()
+                        elif(type=='.pdf'):
+                            pdf = FPDF()
+                            pdf.add_page()
+                            pdf.set_font("Arial", size=15)
+                            pdf.cell(200, 10, txt=data,ln=2, align='C')
+                            pdf.output(filename)
+                            msg = QtWidgets.QMessageBox()
+                            msg.setText("Download Successfully !")
+                            retval = msg.exec_()
+                        elif (type=='.doc'):
+                            markfile = 'MarkForDoc.txt'
+                            f = open('MarkForDoc.txt')
+                            path = os.path.realpath(f.name)
+                            filepath = path.replace(markfile, '')
+                            obWord = CWordAutomate()
+                            obWord.Write(data, "Courier New", 10)
+                            obWord.Save(filepath + "\\DownloadFile\\"+ID+".doc")
+                            obWord.Quit()
+                            msg = QtWidgets.QMessageBox()
+                            msg.setText("Download Successfully !")
+                            retval = msg.exec_()
+                        elif(type=='.docx'):
+                            try:
+                                myfile=docx.Document()
+                                myfile.add_paragraph(data)
+                                myfile.save(filename)
+                            except:
+                                msg = QtWidgets.QMessageBox()
+                                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                                msg.setText("Download failed")
+                                retval = msg.exec_()
+                                return
+                            msg = QtWidgets.QMessageBox()
+                            msg.setText("Download Successfully !")
+                            retval = msg.exec_()
+
 
     def DisconnectFunction(self):
 
@@ -321,6 +450,7 @@ class Login(QDialog):
             s.settimeout(5)
             data = s.recv(1024)
             data = data.decode('utf-8')
+            s.settimeout(None)
         except:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)

@@ -83,7 +83,7 @@ font-size:14pt</string>
 font-size: 12pt</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="DownLoadButton">
    <property name="geometry">
     <rect>
      <x>180</x>
