@@ -292,6 +292,10 @@ def multi_threaded_client(conn):
             if View(conn)==0:
                 break
 
+        if data == 'Disconnect':
+            (client, ap) = s.accept()
+            start_new_thread(multi_threaded_client, (client,))
+
     conn.close()
 
 class Task(QThread):

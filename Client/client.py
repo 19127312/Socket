@@ -218,7 +218,8 @@ class QueryClient(QDialog):
 
 
     def DisconnectFunction(self):
-
+        s.sendall(b'Disconnect')
+        s.close()
         connect=Connect()
         widget.addWidget(connect)
         widget.setFixedWidth(347)
