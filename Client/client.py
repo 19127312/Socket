@@ -90,7 +90,7 @@ class QueryClientTable(QtWidgets.QMainWindow,QPushButton):
         self.tableWidget.setRowCount(int(number))
         tableIndex = 0
         for row in myTuple:
-            line=row.split()
+            line=row.split("#")
             self.tableWidget.setItem(tableIndex, 0, QtWidgets.QTableWidgetItem(line[0]))
             self.tableWidget.setItem(tableIndex, 1, QtWidgets.QTableWidgetItem(line[1]))
             self.tableWidget.setItem(tableIndex, 2, QtWidgets.QTableWidgetItem(line[2]))
@@ -462,6 +462,8 @@ class Login(QDialog):
 
     def gotocreate(self):
         createacc=CreateAcc()
+        widget.setFixedWidth(480)
+        widget.setFixedHeight(620)
         widget.addWidget(createacc)
         widget.setCurrentIndex(widget.currentIndex()+1)
 

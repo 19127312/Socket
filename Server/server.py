@@ -127,8 +127,12 @@ def SQL(conn):
         retval = msg.exec_()
         return 0
     com = data.split()
-    query = com[0]
-    type = com[1]
+    if(len(com)==3):
+        query = com[0] +" "+com[1]
+        type=com[2]
+    else:
+        query = com[0]
+        type = com[1]
     connection = sqlite3.connect("serverBook.db")
     cur = connection.cursor()
     query = "'" + query + "'"
@@ -152,10 +156,10 @@ def SQL(conn):
     # send tuple here for client
     myString = ""
     for row in cur.execute(sqlcom):
-        myString = myString + row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + str(
+        myString = myString + row[0] + "#" + row[1] + "#" + row[2] + "#" + row[3] + "#" + str(
             row[4]) + "|"
     myString += str(number)
-
+    print(myString)
     sizeString = getsizeof(myString)
     try:
         conn.sendall(bytes(str(sizeString), 'utf8'))
