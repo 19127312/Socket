@@ -1,16 +1,10 @@
 import sys
 import socket
-#need pyqt
-from _thread import *
 from PyQt5 import QtWidgets,uic
 from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import (QCoreApplication, QThread)
-#need fpdf
 from fpdf import FPDF
-#need docx install
-#import docx
-#need win32 install
+import docx
 import os
 import win32com.client
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -159,7 +153,7 @@ class QueryClient(QDialog):
                         msg.setText("Connect failed!")
                         retval = msg.exec_()
 
-                    if(data==""):
+                    if(data=="Not Found"):
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
                         msg.setText("Can't find file in library")
@@ -190,10 +184,12 @@ class QueryClient(QDialog):
                             msg.setText("Download Successfully !")
                             retval = msg.exec_()
                         elif (type=='.doc'):
-                            markfile = 'MarkForDoc.txt'
-                            f = open('MarkForDoc.txt')
+                            markfile = 'DownloadFile\\MarkForDoc.txt'
+                            f = open(markfile)
                             path = os.path.realpath(f.name)
+                            print(path)
                             filepath = path.replace(markfile, '')
+                            print(filepath)
                             obWord = CWordAutomate()
                             obWord.Write(data, "Courier New", 10)
                             obWord.Save(filepath + "\\DownloadFile\\"+ID+".doc")
@@ -260,6 +256,7 @@ class QueryClient(QDialog):
                     try:
                         size = s.recv(1024)
                         size = size.decode('utf-8')
+                        print(size)
                     except:
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -270,13 +267,14 @@ class QueryClient(QDialog):
                     try:
                         data = s.recv(int(size))
                         data = data.decode('utf-8')
+                        print(data)
                     except:
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
                         msg.setText("Connect failed!")
                         retval = msg.exec_()
 
-                    if(data==""):
+                    if(data=="Not Found"):
                         msg = QtWidgets.QMessageBox()
                         msg.setIcon(QtWidgets.QMessageBox.Critical)
                         msg.setText("Can't find file in library")

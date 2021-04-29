@@ -238,7 +238,7 @@ def View(conn):
         myText = file.read()
         file.close()
     except:
-        myText = ""
+        myText = "Not Found"
 
     sizeString = getsizeof(myText)
 
