@@ -224,7 +224,7 @@ class QueryClient(QDialog):
            connect=Connect()
            widget.addWidget(connect)
            widget.setFixedWidth(347)
-           widget.setFixedHeight(190)
+           widget.setFixedHeight(130)
            widget.setCurrentIndex(widget.currentIndex() + 1)
         except:
             msg = QtWidgets.QMessageBox()
@@ -390,20 +390,15 @@ class Connect(QDialog):
     def ConnectFunction(self):
         #Input here
         HOST = self.InputIP.text()
-        PORT = self.InputPort.text()
-        if (HOST == "" or PORT == ""):
+        PORT = 8000
+        if (HOST == "" ):
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setText("IP and Port must be filled!")
             retval = msg.exec_()
             return
-        if(not PORT.isdigit()):
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Port must be number!")
-            retval = msg.exec_()
-            return
-        PORT=int(PORT)
+
+
         try:
             s.connect((HOST, PORT))
         except:
@@ -419,8 +414,8 @@ class Connect(QDialog):
         msg.setText("Established connection successfully!")
         retval = msg.exec_()
         login=Login()
-        widget.setFixedWidth(480)
-        widget.setFixedHeight(620)
+        widget.setFixedWidth(473)
+        widget.setFixedHeight(360)
         widget.addWidget(login)
         widget.setCurrentIndex(widget.currentIndex() + 1)
 
@@ -553,7 +548,7 @@ if __name__ == "__main__":
     widget=QtWidgets.QStackedWidget()
     widget.addWidget(mainwindow)
     widget.setFixedWidth(347)
-    widget.setFixedHeight(190)
+    widget.setFixedHeight(130)
     widget.show()
     app.exec_()
 

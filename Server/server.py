@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import (QCoreApplication, QThread)
 import os
-HOST = '127.0.0.1'
+HOST = socket.gethostbyname(socket.gethostname())
 PORT = 8000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -341,6 +341,7 @@ class InitServer(QDialog):
     def __init__(self):
         super(InitServer,self).__init__()
         loadUi("ServerCreate.ui",self)
+        self.IP.setText(socket.gethostbyname(socket.gethostname()))
         self.CreateButton.clicked.connect(self.CreateServer)
         self.setWindowTitle("Create Server")
     def CreateServer(self):
@@ -366,8 +367,8 @@ if __name__ == '__main__':
     mainwindow = InitServer()
     widget = QtWidgets.QStackedWidget()
     widget.addWidget(mainwindow)
-    widget.setFixedWidth(226)
-    widget.setFixedHeight(105)
+    widget.setFixedWidth(203)
+    widget.setFixedHeight(156)
     widget.show()
     app.exec_()
 
