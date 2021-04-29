@@ -7,7 +7,7 @@ from fpdf import FPDF
 import docx
 import os
 import win32com.client
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 class CWordAutomate:
     def __init__( self ):
         self.obWord         = win32com.client.Dispatch( "Word.Application" )
@@ -395,8 +395,9 @@ class Connect(QDialog):
             msg.setText("IP and Port must be filled!")
             retval = msg.exec_()
             return
-
-
+        global s
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+     
         try:
             s.connect((HOST, PORT))
         except:

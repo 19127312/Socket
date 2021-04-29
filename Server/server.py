@@ -279,7 +279,6 @@ def multi_threaded_client(conn):
             break
         try:
             if test == 0:
-                print('b')
                 break
         except:
             pass
@@ -336,10 +335,9 @@ class Server(QDialog):
 
     def DisconnectFunction(self):
 
-        s.close()
         global test
         test = 0
-        print('a')
+
 
 class InitServer(QDialog):
     def __init__(self):
@@ -355,6 +353,8 @@ class InitServer(QDialog):
            msg.setText("Cannot create!")
            retval = msg.exec_()
        else:
+            global test
+            test = 1
             global  MaxClient
             MaxClient=int(self.spinBox.value())
             server = Server()
