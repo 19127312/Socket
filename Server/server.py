@@ -7,11 +7,12 @@ from PyQt5 import QtWidgets,uic
 from PyQt5.QtWidgets import QDialog, QApplication,QPushButton
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import (QCoreApplication, QThread)
-
+import os
 HOST = '127.0.0.1'
 PORT = 8000
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 s.bind((HOST, PORT))
 s.listen(3) #Maximum number of client in queue
 
@@ -261,8 +262,10 @@ def View(conn):
 
 def multi_threaded_client(conn):
     while True:
+
         try:
             data = conn.recv(1024)
+            print(data)
             data = data.decode('utf-8')
         except:
             msg = QtWidgets.QMessageBox()
@@ -270,6 +273,12 @@ def multi_threaded_client(conn):
             msg.setText("Connect failed!")
             retval = msg.exec_()
             break
+        try:
+            if test == 0:
+                print('b')
+                break
+        except:
+            pass
         if not data:
             break
         if data == 'login':
@@ -310,14 +319,23 @@ class Task(QThread):
             except:
                 s.close()
 
+
 class Server(QDialog):
     def __init__(self):
         super(Server,self).__init__()
         loadUi("DisconnectALL.ui",self)
         self.do_task()
+        self.DiconnectButton.clicked.connect(self.DisconnectFunction)
     def do_task(self):
         self.thread = Task()
         self.thread.start()
+
+    def DisconnectFunction(self):
+
+        s.close()
+        global test
+        test = 0
+        print('a')
 
 class InitServer(QDialog):
     def __init__(self):

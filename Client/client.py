@@ -9,7 +9,7 @@ from PyQt5.QtCore import (QCoreApplication, QThread)
 #need fpdf
 from fpdf import FPDF
 #need docx install
-import docx
+#import docx
 #need win32 install
 import os
 import win32com.client
@@ -218,13 +218,19 @@ class QueryClient(QDialog):
 
 
     def DisconnectFunction(self):
-        s.sendall(b'Disconnect')
-        s.close()
-        connect=Connect()
-        widget.addWidget(connect)
-        widget.setFixedWidth(347)
-        widget.setFixedHeight(190)
-        widget.setCurrentIndex(widget.currentIndex() + 1)
+        try:
+           s.sendall(b'Disconnect')
+           s.close()
+           connect=Connect()
+           widget.addWidget(connect)
+           widget.setFixedWidth(347)
+           widget.setFixedHeight(190)
+           widget.setCurrentIndex(widget.currentIndex() + 1)
+        except:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Connect failed!")
+            retval = msg.exec_()
 
     def ViewFunction(self):
         command = self.Command.text()
